@@ -24,7 +24,7 @@ const app = {
 		this.listenKeyboardEvents();
 	},
 
-	drawBoard: function() {
+	drawBoard() {
 		for (let i = 0; i < this.grid.rows; i++) {
 			const row = document.createElement("div");
 			row.classList.add("row");
@@ -60,6 +60,24 @@ const app = {
 			}
 			document.querySelector("#board").appendChild(row);
 		}
+		if (
+			this.player.x === this.targetCell.x &&
+			this.player.y === this.targetCell.y
+		) {
+			const playerEl = document.createElement("div");
+			if (this.player.direction === "left") {
+				playerEl.classList.add("left");
+			} else if (this.player.direction === "right") {
+				playerEl.classList.add("right");
+			} else if (this.player.direction === "up") {
+				playerEl.classList.add("up");
+			} else if (this.player.direction === "down") {
+				playerEl.classList.add("down");
+			}
+			playerEl.classList.add("player");
+			document.querySelector(".target-cell").appendChild(playerEl);
+		}
+
 		this.isGameOver();
 	},
 
