@@ -31,29 +31,11 @@ const app = {
 			for (let j = 0; j < this.grid.cols; j++) {
 				const cell = document.createElement("div");
 				cell.classList.add("cell");
-				cell.dataset.positionX = j;
-				cell.dataset.positionY = i;
 
-				if (
-					+cell.dataset.positionX === this.targetCell.x &&
-					+cell.dataset.positionY === this.targetCell.y
-				) {
+				if (j === this.targetCell.x && i === this.targetCell.y) {
 					cell.classList.add("target-cell");
-				} else if (
-					+cell.dataset.positionX === this.player.x &&
-					+cell.dataset.positionY === this.player.y
-				) {
-					const playerEl = document.createElement("div");
-					if (this.player.direction === "left") {
-						playerEl.classList.add("left");
-					} else if (this.player.direction === "right") {
-						playerEl.classList.add("right");
-					} else if (this.player.direction === "up") {
-						playerEl.classList.add("up");
-					} else if (this.player.direction === "down") {
-						playerEl.classList.add("down");
-					}
-					playerEl.classList.add("player");
+				} else if (j === this.player.x && i === this.player.y) {
+					const playerEl = this.createPlayer();
 					cell.appendChild(playerEl);
 				}
 				row.appendChild(cell);
@@ -64,21 +46,9 @@ const app = {
 			this.player.x === this.targetCell.x &&
 			this.player.y === this.targetCell.y
 		) {
-			const playerEl = document.createElement("div");
-			if (this.player.direction === "left") {
-				playerEl.classList.add("left");
-			} else if (this.player.direction === "right") {
-				playerEl.classList.add("right");
-			} else if (this.player.direction === "up") {
-				playerEl.classList.add("up");
-			} else if (this.player.direction === "down") {
-				playerEl.classList.add("down");
-			}
-			playerEl.classList.add("player");
+			const playerEl = this.createPlayer();
 			document.querySelector(".target-cell").appendChild(playerEl);
 		}
-
-		this.isGameOver();
 	},
 
 	clearBoard() {
@@ -91,6 +61,21 @@ const app = {
 		this.isGameOver();
 	},
 
+	createPlayer() {
+		const playerEl = document.createElement("div");
+		if (this.player.direction === "left") {
+			playerEl.classList.add("left");
+		} else if (this.player.direction === "right") {
+			playerEl.classList.add("right");
+		} else if (this.player.direction === "up") {
+			playerEl.classList.add("up");
+		} else if (this.player.direction === "down") {
+			playerEl.classList.add("down");
+		}
+		playerEl.classList.add("player");
+		return playerEl;
+	},
+
 	turnUp() {
 		if (this.gameOver) {
 			return;
@@ -101,9 +86,8 @@ const app = {
 		} else {
 			this.player.direction = "up";
 			this.nbMoves += 1;
+			this.redrawBoard();
 		}
-
-		this.redrawBoard();
 	},
 
 	turnLeft() {
@@ -117,7 +101,6 @@ const app = {
 			this.player.direction = "left";
 			this.nbMoves += 1;
 		}
-
 		this.redrawBoard();
 	},
 
@@ -130,8 +113,8 @@ const app = {
 		} else {
 			this.player.direction = "right";
 			this.nbMoves += 1;
+			this.redrawBoard();
 		}
-		this.redrawBoard();
 	},
 
 	turnDown() {
@@ -143,8 +126,8 @@ const app = {
 		} else {
 			this.player.direction = "down";
 			this.nbMoves += 1;
+			this.redrawBoard();
 		}
-		this.redrawBoard();
 	},
 
 	moveForward() {
@@ -198,11 +181,32 @@ const app = {
 			this.player.x === this.targetCell.x &&
 			this.player.y === this.targetCell.y
 		) {
-			this.isGameOver = true;
+			this.gameOver = true;
 			setTimeout(() => {
 				alert(`Gagné ! en ${this.nbMoves} déplacements !`);
-			}, 100);
+				if (confirm("Voulez vous rejouer?")) {
+					this.replay();
+				} else {
+					alert("Merci d'avoir joué ! :)");
+				}
+			}, 50);
+		} else {
+			this.gameOver = false;
 		}
+	},
+
+	replay() {
+		this.clearBoard();
+		this.player.x = 0;
+		this.player.y = 0;
+		this.player.direction = "right";
+		this.targetCell.x = 5;
+		this.targetCell.y = 3;
+		this.grid.rows = 4;
+		this.grid.cols = 6;
+		this.nbMoves = 0;
+		this.gameOver = false;
+		this.redrawBoard();
 	},
 };
 
