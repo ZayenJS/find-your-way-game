@@ -108,6 +108,7 @@ const app = {
 		if (this.gameOver) {
 			return;
 		}
+
 		if (this.player.direction === "right") {
 			this.moveForward();
 		} else {
@@ -121,6 +122,7 @@ const app = {
 		if (this.gameOver) {
 			return;
 		}
+
 		if (this.player.direction === "down") {
 			this.moveForward();
 		} else {
@@ -196,17 +198,66 @@ const app = {
 	},
 
 	replay() {
-		this.player.x = 0;
-		this.player.y = 0;
+		console.log("replay function");
+		this.grid.rows = this.getRandomInt();
+		this.grid.cols = this.getRandomInt();
+
+		this.player.x = this.changeAndCheckPlayerPosition(
+			this.player.x,
+			this.grid.cols,
+		);
+
+		this.player.y = this.changeAndCheckPlayerPosition(
+			this.player.y,
+			this.grid.rows,
+		);
+
 		this.player.direction = "right";
-		this.targetCell.x = 5;
-		this.targetCell.y = 3;
-		this.grid.rows = 4;
-		this.grid.cols = 6;
+
+		this.targetCell.x = this.changeAndCheckTargetPosition(
+			this.targetCell.x,
+			this.grid.cols,
+		);
+
+		this.targetCell.y = this.changeAndCheckTargetPosition(
+			this.targetCell.y,
+			this.grid.rows,
+		);
+
 		this.nbMoves = 0;
 		this.gameOver = false;
 		this.redrawBoard();
 	},
+
+	changeAndCheckPlayerPosition(playerPosition, gridSize) {
+		playerPosition = this.getRandomInt();
+		if (
+			playerPosition >= gridSize ||
+			playerPosition < 0 ||
+			playerPosition === gridSize
+		) {
+			return (playerPosition = 0);
+		} else {
+			return playerPosition;
+		}
+	},
+
+	changeAndCheckTargetPosition(targetCellPosition, gridSize) {
+		targetCellPosition = this.getRandomInt();
+		if (targetCellPosition >= gridSize) {
+			targetCellPosition = gridSize - 1;
+			if (targetCellPosition < 0) {
+				targetCellPosition = gridSize + 1;
+			}
+		}
+		return targetCellPosition;
+	},
+
+	getRandomInt() {
+		return Math.floor(Math.random() * (15 - 4 + 1) + 4);
+	},
+
+	// TODO : Add traps
 };
 
 document.addEventListener("DOMContentLoaded", app.init.bind(app));
