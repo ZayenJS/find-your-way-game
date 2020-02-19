@@ -196,7 +196,6 @@ const app = {
 	},
 
 	replay() {
-		this.clearBoard();
 		this.player.x = 0;
 		this.player.y = 0;
 		this.player.direction = "right";
