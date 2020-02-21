@@ -19,11 +19,13 @@ const app = {
 	level: 0,
 
 	grid: {
-		rows: 4,
-		cols: 6,
+		rows: 8,
+		cols: 10,
 	},
 
 	isChangingBoard: false,
+	isTimeUp: false,
+	maxTime: 5,
 
 	gameOver: false,
 
@@ -43,6 +45,7 @@ const app = {
 	domElems: {
 		board: document.querySelector("#board"),
 		playerInfo: document.querySelector("#player__info"),
+		time: document.querySelector("#time"),
 		playerLife: document.querySelector("#player__life"),
 		levelDisplay: document.querySelector("#level__display"),
 		maxJumpsDisplay: document.querySelector("#max__jumps"),
@@ -70,6 +73,15 @@ const app = {
 			"click",
 			this.changeBoardHandler.bind(this),
 		);
+
+		const timer = setInterval(() => {
+			let result = this.checkTimer();
+			this.isTimeUp = result;
+			if (this.isTimeUp) {
+				this.music.gameOver.play();
+			}
+		}, 1000);
+
 		this.playStartingMusic();
 		this.drawBoard();
 		this.showPlayerLife();
@@ -161,6 +173,10 @@ const app = {
 			return;
 		}
 
+		if (this.collision) {
+			return;
+		}
+
 		if (this.player.direction === "up") {
 			this.moveForward();
 		} else {
@@ -172,6 +188,10 @@ const app = {
 
 	turnLeft() {
 		if (this.gameOver) {
+			return;
+		}
+
+		if (this.collision) {
 			return;
 		}
 
@@ -189,6 +209,10 @@ const app = {
 			return;
 		}
 
+		if (this.collision) {
+			return;
+		}
+
 		if (this.player.direction === "right") {
 			this.moveForward();
 		} else {
@@ -203,6 +227,10 @@ const app = {
 			return;
 		}
 
+		if (this.collision) {
+			return;
+		}
+
 		if (this.player.direction === "down") {
 			this.moveForward();
 		} else {
@@ -214,6 +242,10 @@ const app = {
 
 	moveForward() {
 		if (this.gameOver) {
+			return;
+		}
+
+		if (this.collision) {
 			return;
 		}
 
@@ -245,7 +277,9 @@ const app = {
 	},
 
 	listenKeyboardEvents() {
-		document.addEventListener("keyup", e => {
+		document.addEventListener("keydown", e => {
+			countdown.start();
+
 			if (e.keyCode === 38) {
 				// flêche haut
 				this.turnUp();
@@ -273,7 +307,7 @@ const app = {
 			setTimeout(() => {
 				playerEl.classList.remove("ouch");
 				this.collision = false;
-			}, 500);
+			}, 1000);
 		} else if (this.player.isDead) {
 			this.music.playerDie.play();
 			playerEl.classList.add("die");
@@ -284,12 +318,39 @@ const app = {
 		if (this.player.isDead) {
 			this.player.hearts -= 1;
 			this.gameOver = true;
-			this.ouch();
-
 			this.showPlayerLife();
+			this.ouch();
+			countdown.stop();
 
 			this.music.startingMusic.pause();
 			this.music.losingMusic.play();
+			setTimeout(() => {
+				if (this.player.hearts <= 0) {
+					this.domElems.backdrop.style.display = "block";
+					this.domElems.replayModal.style.display = "block";
+					this.domElems.losingMessage.textContent = `Vous êtes arrivé jusqu'au niveau ${this.level} ! Voulez vous rejouer?`;
+					this.domElems.replayButton.addEventListener(
+						"click",
+						this.replayButtonHandler.bind(this),
+					);
+					this.music.gameOver.play();
+					return;
+				}
+
+				this.music.startingMusic.play();
+				this.music.losingMusic.pause();
+				this.music.losingMusic.currentTime = 0;
+				this.level--;
+				this.replay();
+			}, 2000);
+		} else if (this.isTimeUp) {
+			console.log(this.isTimeUp);
+			this.player.hearts -= 1;
+			this.gameOver = true;
+			this.showPlayerLife();
+			this.music.startingMusic.pause();
+			this.isTimeUp = false;
+
 			setTimeout(() => {
 				if (this.player.hearts <= 0) {
 					this.domElems.backdrop.style.display = "block";
@@ -317,10 +378,11 @@ const app = {
 			const playerEl = document.querySelector(".player");
 			playerEl.classList.add("player--disappear");
 			this.gameOver = true;
+			countdown.stop();
 			this.music.startingMusic.pause();
 			this.music.winningMusic.play();
-			// alert(`Gagné ! en ${this.player.nbMoves} déplacements !`); // a changer pour custom alert
 			setTimeout(() => {
+				countdown.init();
 				this.replay();
 				this.music.startingMusic.play();
 				this.music.winningMusic.pause();
@@ -331,14 +393,13 @@ const app = {
 	},
 
 	stopGameHandler() {
-		// this.music.startingMusic = "";
 		this.music.gameOver.play();
 		this.gameOver = true;
 	},
 
 	replay() {
-		this.grid.rows = this.getRandomInt();
-		this.grid.cols = this.getRandomInt();
+		this.grid.rows = this.getRandomInt(8, 16);
+		this.grid.cols = this.getRandomInt(10, 22);
 
 		this.targetCell.x = this.checkPosition(0, this.grid.cols);
 		this.targetCell.y = this.checkPosition(0, this.grid.rows);
@@ -357,16 +418,26 @@ const app = {
 		this.domElems.levelDisplay.textContent = `niveau ${this.level}`;
 		this.player.maxJumps = 2;
 		this.domElems.maxJumpsDisplay.textContent = `Sauts restants : ${this.player.maxJumps}`;
+
+		this.isTimeUp = false;
 		this.gameOver = false;
 		this.player.isDead = false;
 		this.showPlayerLife();
 		this.increaseDifficulty(this.level);
 		this.redrawBoard();
+		countdown.init();
+		countdown.start();
 	},
 
 	increaseDifficulty(level) {
-		if (level % 3 === 0) {
-			this.traps = this.addTraps(level, 2, this.grid.cols, 2, this.grid.rows);
+		if (level % 2 === 0) {
+			this.traps = this.addTraps(
+				level * 2,
+				2,
+				this.grid.cols,
+				2,
+				this.grid.rows,
+			);
 		}
 	},
 
@@ -524,7 +595,7 @@ const app = {
 		this.redrawBoard();
 	},
 
-	changeBoardHandler(e) {
+	changeBoardHandler() {
 		document.activeElement.blur();
 		this.domElems.board.focus();
 		this.isChangingBoard = true;
@@ -532,7 +603,69 @@ const app = {
 		this.isChangingBoard = false;
 	},
 
-	//TODO add timer
+	checkTimer() {
+		if (countdown.usedTime === countdown.totalTime) {
+			return true;
+		} else {
+			return false;
+		}
+	},
 };
 
+// TIMER
+function Countdown(elem, seconds) {
+	const that = {};
+
+	that.elem = elem;
+	that.seconds = seconds;
+	that.totalTime = seconds * 100;
+	that.usedTime = 0;
+	that.startTime = +new Date();
+	that.timer = null;
+
+	that.count = function() {
+		that.usedTime = Math.floor((+new Date() - that.startTime) / 10);
+
+		const tt = that.totalTime - that.usedTime;
+		if (tt <= 0) {
+			that.elem.textContent = "00.00";
+			clearInterval(that.timer);
+		} else {
+			let mi = Math.floor(tt / (60 * 100));
+			let ss = Math.floor((tt - mi * 60 * 100) / 100);
+			let ms = tt - Math.floor(tt / 100) * 100;
+
+			that.elem.textContent = that.fillZero(ss) + "." + that.fillZero(ms);
+		}
+	};
+
+	that.init = function() {
+		if (that.timer) {
+			clearInterval(that.timer);
+			that.elem.textContent = "00.00";
+			that.totalTime = seconds * 100;
+			that.usedTime = 0;
+			that.startTime = +new Date();
+			that.timer = null;
+		}
+	};
+
+	that.start = function() {
+		if (!that.timer) {
+			that.timer = setInterval(that.count, 10);
+		}
+	};
+
+	that.stop = function() {
+		if (that.timer) clearInterval(that.timer);
+	};
+
+	that.fillZero = function(num) {
+		return num < 10 ? "0" + num : num;
+	};
+
+	return that;
+}
+
 document.addEventListener("DOMContentLoaded", app.init.bind(app));
+const countdown = new Countdown(app.domElems.time, app.maxTime);

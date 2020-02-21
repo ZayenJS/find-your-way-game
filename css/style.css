@@ -32,7 +32,14 @@ body {
 	margin: 0.5rem 0;
 }
 
+#timer {
+	height: 50px;
+	width: 185px;
+	background: azure;
+}
+
 #player__life {
+	height: 50px;
 	display: flex;
 	align-items: center;
 }
@@ -150,6 +157,14 @@ body {
 	opacity: 1;
 }
 
+.ouch {
+	animation: ouch 200ms 3;
+}
+
+.die {
+	animation: die 1s forwards;
+}
+
 .player--disappear {
 	animation: disappear 1500ms forwards;
 }
@@ -183,14 +198,6 @@ body {
 .target-cell {
 	background: url("/img/target+seams.png");
 	background-size: cover;
-}
-
-.ouch {
-	animation: ouch 200ms 3;
-}
-
-.die {
-	animation: die 1s forwards;
 }
 
 .trap {
