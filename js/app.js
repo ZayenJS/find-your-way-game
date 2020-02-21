@@ -287,28 +287,6 @@ const app = {
 			this.music.playerDie.play();
 			this.music.losingMusic.play();
 			setTimeout(() => {
-				switch (true) {
-					case this.player.hearts > 1:
-						alert(
-							`Perdu vous êtes tombé dans un piège ! \n\nIl vous reste ${this.player.hearts} vies.`,
-						);
-						break;
-					case this.player.hearts === 1:
-						alert(
-							`Perdu vous êtes tombé dans un piège ! \n\nATTENTION il ne vous reste que ${this.player.hearts} vie !`,
-						);
-						break;
-					case this.player.hearts === 0:
-						alert(
-							`Perdu ! Vous avez epuisé toutes vos vies, merci d'avoir joué ! :)`,
-						);
-						break;
-					default:
-						alert(
-							`Perdu vous êtes tombé dans un piège ! \n\nIl vous reste ${this.player.hearts} vie(s).`,
-						);
-				}
-
 				if (this.player.hearts <= 0) {
 					this.domElems.backdrop.style.display = "block";
 					this.domElems.replayModal.style.display = "block";
@@ -317,17 +295,16 @@ const app = {
 						"click",
 						this.replayButtonHandler.bind(this),
 					);
+					this.music.gameOver.play();
 					return;
 				}
-
-				// this.music.gameOver.play();
 
 				this.music.startingMusic.play();
 				this.music.losingMusic.pause();
 				this.music.losingMusic.currentTime = 0;
 				this.level--;
 				this.replay();
-			}, 50);
+			}, 2000);
 		} else if (
 			this.player.x === this.targetCell.x &&
 			this.player.y === this.targetCell.y &&
