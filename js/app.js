@@ -266,25 +266,29 @@ const app = {
 	},
 
 	ouch() {
-		this.music.painSound.play();
 		const playerEl = document.querySelector("#player");
-		playerEl.classList.add("ouch");
-		setTimeout(() => {
-			playerEl.classList.remove("ouch");
-			this.collision = false;
-		}, 500);
+		if (this.collision) {
+			this.music.painSound.play();
+			playerEl.classList.add("ouch");
+			setTimeout(() => {
+				playerEl.classList.remove("ouch");
+				this.collision = false;
+			}, 500);
+		} else if (this.player.isDead) {
+			this.music.playerDie.play();
+			playerEl.classList.add("die");
+		}
 	},
 
 	isGameOver() {
-		console.log(this.level);
 		if (this.player.isDead) {
 			this.player.hearts -= 1;
 			this.gameOver = true;
+			this.ouch();
 
 			this.showPlayerLife();
 
 			this.music.startingMusic.pause();
-			this.music.playerDie.play();
 			this.music.losingMusic.play();
 			setTimeout(() => {
 				if (this.player.hearts <= 0) {
@@ -310,6 +314,8 @@ const app = {
 			this.player.y === this.targetCell.y &&
 			this.player.nbMoves > 0
 		) {
+			const playerEl = document.querySelector(".player");
+			playerEl.classList.add("player--disappear");
 			this.gameOver = true;
 			this.music.startingMusic.pause();
 			this.music.winningMusic.play();
@@ -325,7 +331,7 @@ const app = {
 	},
 
 	stopGameHandler() {
-		this.music.startingMusic = "";
+		// this.music.startingMusic = "";
 		this.music.gameOver.play();
 		this.gameOver = true;
 	},
@@ -353,8 +359,8 @@ const app = {
 		this.domElems.maxJumpsDisplay.textContent = `Sauts restants : ${this.player.maxJumps}`;
 		this.gameOver = false;
 		this.player.isDead = false;
+		this.showPlayerLife();
 		this.increaseDifficulty(this.level);
-		console.log(this.traps);
 		this.redrawBoard();
 	},
 
@@ -525,6 +531,8 @@ const app = {
 		this.replay();
 		this.isChangingBoard = false;
 	},
+
+	//TODO add timer
 };
 
 document.addEventListener("DOMContentLoaded", app.init.bind(app));
