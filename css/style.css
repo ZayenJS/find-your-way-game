@@ -1,5 +1,8 @@
 body {
-	background: #ddd;
+	font-family: "Knewave", cursive;
+	position: relative;
+	background-color: #061c07;
+	background-image: url("https://www.transparenttextures.com/patterns/buried.png");
 }
 
 #board {
@@ -10,11 +13,118 @@ body {
 	flex-direction: column;
 }
 
+#player__info {
+	height: fit-content;
+	display: flex;
+	align-items: flex-end;
+	flex-direction: column;
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: #fff;
+	padding: 1rem;
+	margin: 1rem 2rem;
+	font-size: 1.5em;
+}
+
+#player__info > div {
+	margin: 0.5rem 0;
+}
+
+#player__life {
+	display: flex;
+	align-items: center;
+}
+
+.heart {
+	height: 50px;
+	width: 50px;
+}
+
+#backdrop {
+	background: rgba(0, 0, 0, 0.7);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	z-index: 50;
+}
+
+#replay__modal {
+	z-index: 100;
+	height: 25%;
+	width: 25%;
+	position: fixed;
+	top: 50%;
+	right: 50%;
+	transform: translate(50%, -50%);
+	background-color: #0f4112;
+	background-image: url("https://www.transparenttextures.com/patterns/buried.png");
+	display: flex;
+	padding: 2rem;
+	text-align: center;
+	flex-direction: column;
+	justify-content: space-evenly;
+	border-radius: 50px;
+	box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.4);
+}
+
+#replay__modal p {
+	font-size: 1.1em;
+	line-height: 1.5;
+	color: #fff;
+}
+
+#replay__button {
+	border: 1px solid rgb(2, 27, 12);
+	background-color: transparent;
+	padding: 1rem 2rem;
+	margin: 2rem 0;
+	color: #fff;
+	font-size: 1.5em;
+	border-radius: 35px;
+	transition: all 250ms ease-in-out;
+}
+
+.btn {
+	border: 1px solid #000;
+	background-color: transparent;
+	padding: 1rem 2rem;
+	margin: 0.5rem 0;
+	color: #fff;
+	font-size: 1.5em;
+	border-radius: 35px;
+	transition: all 250ms ease-in-out;
+}
+
+#buttons {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	margin: 2rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.btn {
+	border: 1px solid rgb(1, 14, 6);
+}
+
+.btn:hover,
+#replay__button:hover,
+#stop__button:hover {
+	transform: scale(1.05);
+	background-color: #052;
+}
+
 .player {
 	margin: 20px;
 	background: url("/img/sprite.png") no-repeat;
 	height: 33px;
 	width: 30px;
+	z-index: 1;
+	position: relative;
 }
 
 .up {
@@ -31,14 +141,33 @@ body {
 
 .row {
 	display: flex;
+	background-color: #ddd;
 }
 
 .cell {
 	height: 70px;
 	width: 70px;
 	border: 1px solid #000;
+	position: relative;
 }
 
 .target-cell {
 	background-color: #050;
+}
+
+.ouch {
+	filter: hue-rotate(220deg);
+}
+
+.trap {
+	z-index: 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	background: url(/img/trap.png);
+	background-position: center;
+	background-size: cover;
+	height: 100%;
 }
