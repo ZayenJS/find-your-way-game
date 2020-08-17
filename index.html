@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>Challenge RPG</title>
-		<link rel="stylesheet" href="css/reset.css" />
-		<link rel="stylesheet" href="css/style.css" />
-		<link
-			href="https://fonts.googleapis.com/css?family=Odibee+Sans&display=swap"
-			rel="stylesheet"
-		/>
-		<script src="js/app.js" defer charset="utf-8"></script>
-	</head>
-	<body>
-		<div id="board"></div>
-		<div id="backdrop"></div>
-		<div id="replay__modal">
-			<p id="losing__message"></p>
-			<button id="replay__button" title="Relance une partie">Rejouer</button>
-		</div>
-		<div id="player__info">
-			<div id="countdown">
-				<span id="time" class="time">06.00</span>
-			</div>
-			<div id="player__life"></div>
-			<div id="level__display"></div>
-			<div id="max__jumps"></div>
-			<div id="player__controls">
-				<span>
-					<span>&uarr;, &darr;, &larr;, &rarr; </span>
-					<span>pour se déplacer</span>
-					<span class="spacebar"></span>
-					<span>pour sauter</span>
-				</span>
-			</div>
-		</div>
-		<div id="buttons">
-			<button class="btn" id="change__board">Changer grille</button>
-			<button class="btn" id="stop__button">Arrêter le jeu !</button>
-		</div>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Challenge RPG</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Odibee+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/app.js" defer></script>
+  </head>
+  <body>
+    <div id="board"></div>
+    <div id="backdrop"></div>
+    <div id="replay__modal">
+      <p id="losing__message"></p>
+      <button id="replay__button" title="Relance une partie">Rejouer</button>
+    </div>
+    <div id="player__info">
+      <div id="countdown">
+        <span id="time" class="time">06.00</span>
+      </div>
+      <div id="player__life"></div>
+      <div id="level__display"></div>
+      <div id="max__jumps"></div>
+      <div id="player__controls">
+        <span>
+          <span>&uarr;, &darr;, &larr;, &rarr; </span>
+          <span>pour se déplacer</span>
+          <span class="spacebar"></span>
+          <span>pour sauter</span>
+        </span>
+      </div>
+    </div>
+    <div id="buttons">
+      <button class="btn" id="change__board">Changer grille</button>
+      <button class="btn" id="stop__button">Arrêter le jeu !</button>
+    </div>
+  </body>
 </html>
